@@ -1,79 +1,119 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<h:head>
-    <meta charset="UTF-8"/>
-    <title>Gestão Empresas</title>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="WEB-INF/template/Layout.xhtml">
 
-    <h:outputStylesheet library = "fiepsenai" name ="estilo.css"/>
+    <ui:define name="titulo">
+        Cadastro de Empresas
+    </ui:define>
 
-</h:head>
+    <ui:define name="conteudo">
 
+        <f:metadata>
+            <f:viewAction action="#{gestaoEmpresasBean.todasEmpresas}"/>
+        </f:metadata>
 
-<h:body>
-        <h:head>
-            <h:graphicImage library="fiepsenai" name = "logo.png"/>
-
-        </h:head>
-
-    <div id = "conteudo">
         <h:form>
-            <h:panelGrid columns="2">
 
-                <h:outputLabel value = "Razão Social: " for = "razaoSocial"/>
-                <h:inputText id = "razaoSocial" value = "#{gestaoEmpresasBean.empresa.razaoSocial}" />
+            <p:messages autoUpdate="true"/>
 
-                <h:outputLabel value = "Nome Fantasia: " for = "nomeFantasia:"/>
-                <h:inputText id = "nomeFantasia" value = "#{gestaoEmpresasBean.empresa.nomeFantasia}" />
+            <p:toolbar>
 
-                <h:outputLabel value = "Tipo empresa" />
-                <h:selectOneMenu id = "tipo" value = "#{gestaoEmpresasBean.empresa.tipo}">
-                    <f:selectItem itemLabel="Selecione..." />
-                    <f:selectItems  value = "#{gestaoEmpresasBean.tiposEmpresa}"
-                            var="tipoEmpresa" itemLabel="#{tipoEmpresa.descricao}" itemValue="#{tipoEmpresa}"/>
+                <f:facet name="left">
 
-                </h:selectOneMenu>
+                    <p:inputText placeholder="Digite aqui um termo para pesquisa..."
+                                 size="30" value="#{gestaoEmpresasBean.termoPesquisa}"/>
 
-                <h:outputLabel />
-                <h:commandButton value="Salvar" actionListener="#{gestaoEmpresasBean.salvar()}"/>
-            </h:panelGrid>
+                    <p:commandButton value="Pesquisar" icon="fa fa-search"
+                                     actionListener="#{gestaoEmpresasBean.pesquisar}" update="empresasDataTable"/>
 
-            <h:dataTable>
-                <h:column>
-                    <f:facet name="header">
-                        <h:outputText value="Razão Social" />
-                    </f:facet>
+                    <span class="ui-separator">
+	                <span class="ui-icon ui-icon-grip-dotted-vertical"/>
+	                </span>
 
-                    <h:outputText value="Curso Java EE Senai Londrina"/>
-                </h:column>
+                    <p:commandButton value="Nova" icon="fa fa-plus"
+                                     onclick="PF('empresaDialogWidgetVar').show()"/>
 
-                <h:column>
-                <f:facet name="header">
-                    <h:outputText value="Nome Fantasia"/>
+                    <span class="ui-separator">
+	                <span class="ui-icon ui-icon-grip-dotted-vertical"/>
+	                </span>
+
+                    <p:commandButton title="Editar" icon="fa fa-edit"/>
+
+                    <p:commandButton title="Excluir" icon="fa fa-trash"/>
+
+                    <span class="ui-separator">
+	                <span class="ui-icon ui-icon-grip-dotted-vertical"/>
+	                </span>
+
+                    <p:commandButton title="Exportar para Excel" icon="fa fa-file-excel-o"/>
+
                 </f:facet>
 
-                <h:outputText value="Curso Java EE Senai Londrina"/>
-                </h:column>
+            </p:toolbar>
 
-                <h:column>
-                <f:facet name="header">
-                    <h:outputText value="Tipo Empresa"/>
-                </f:facet>
+            <p:spacer height="20px"/>
 
-                <h:outputText value="Curso Java EE Senai Londrina"/>
-                </h:column>
+            <p:dataTable id="empresasDataTable" value="#{gestaoEmpresasBean.listaEmpresa}"
+                         var="empresa" emptyMessage="Nenhuma informação a ser exibida"
+                         paginator="true" rows="10" paginatorPosition="bottom">
 
-            </h:dataTable>
+                <p:column headerText="Razão Social" sortBy="#{empresa.razaoSocial}">
+                    <h:outputText value="#{empresa.razaoSocial}"/>
+                </p:column>
+
+                <p:column headerText="Nome Fantasia">
+                    <h:outputText value="#{empresa.nomeFantasia}"/>
+                </p:column>
+
+                <p:column headerText="Tipo Empresa">
+                    <h:outputText value="#{empresa.tipo}"/>
+                </p:column>
+
+                <p:column headerText="Ramo Atividade">
+                    <h:outputText value="#{empresa.ramoAtividade.descricao}"/>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:dialog header="Nova empresa" widgetVar="empresaDialogWidgetVar"
+                      modal="true" resizable="false" closeOnEscape="true">
+
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="Razão social: " for="razaosocial"/>
+                    <p:inputText id="razaosocial" size="80" maxlength="120"/>
+
+                    <p:outputLabel value="Nome Fantasia: " for="nomeFantasia"/>
+                    <p:inputText id="nomeFantasia" size="80" maxlength="120"/>
+
+                    <p:outputLabel value="Tipo empresa: " for="tipo"/>
+                    <p:selectOneMenu id="tipo">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItems value="#{gestaoEmpresasBean.tiposEmpresa}"
+                                       var="tipoEmpresa" itemLabel="#{tipoEmpresa.descricao}"
+                                       itemValue="#{tipoEmpresa}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="CNPJ: " for="cnpj" />
+                    <p:inputMask id="cnpj" mask="99.999.999/9999-99" size="18" maxlength="18"/>
+
+                    <p:outputLabel value="Data Fundação: " for="dataFundacao"/>
+                    <p:calendar id="dataFundacao" pattern="dd/MM/yyyy" size="30"/>
+
+                    <p:outputLabel value="Ramo Atividade: " for="ramoAtividade"/>
+                    <p:autoComplete id="ramoAtividade" size="80"/>
+
+                    <h:outputLabel />
+                    <p:commandButton value="Salvar" />
+
+                </h:panelGrid>
+
+            </p:dialog>
 
         </h:form>
-    </div>
 
-    <footer>
-        Curso Online "JSF e PrimeFaces Essencial"
-    </footer>
-
-
-</h:body>
-
-</html>
+    </ui:define>
+</ui:composition>
